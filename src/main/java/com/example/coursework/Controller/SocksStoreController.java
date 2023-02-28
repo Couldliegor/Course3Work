@@ -60,5 +60,6 @@ public class SocksStoreController {
         int quantity = sockServerService.reject(socksBatch);
         return ResponseEntity.ok(quantity + "Носков списано");
     }
-
+ //  добавить LocalDateTime
+    //Также реализуйте возможность сохранять операции приемки и выдачи носков в памяти и выгружать их в виде JSON-файла и обратно – загружать данные в приложение из JSON-файла. Для каждой операции нужно сохранять
 }

@@ -27,6 +27,10 @@ public class SockRepositoryImpl implements SocksRepository {
         String json = new ObjectMapper().writeValueAsString(socksMap);
         return json;
     }
+    @Override
+    public Map<Socks, Integer> getMap() throws JsonProcessingException {
+        return socksMap;
+    }
 
     @Override
     public Map<Socks, Integer> getAll() {

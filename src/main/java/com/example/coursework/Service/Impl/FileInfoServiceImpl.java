@@ -1,8 +1,8 @@
 package com.example.coursework.Service.Impl;
 
+import com.example.coursework.Repository.SocksRepository;
 import com.example.coursework.Service.FileInfoService;
 import com.example.coursework.Service.SockServerService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,18 +11,22 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 
 @Service
-@AllArgsConstructor
 public class FileInfoServiceImpl implements FileInfoService {
-//    private LocalDateTime timeNow = LocalDateTime.now();
     @Value("${path.of.info.data.file}")
     private String pathToInfoFile;
     @Value("${name.of.info.data.file}")
     private String nameToInfoFileFile;
 
-    private SockServerService sockServerService;
+    private final SockServerService sockServerService;
+
+    private final SocksRepository socksRepository;
+
+    public FileInfoServiceImpl(SockServerService sockServerService, SocksRepository socksRepository) {
+        this.sockServerService = sockServerService;
+        this.socksRepository = socksRepository;
+    }
 
     @PostConstruct
     private void init() {
@@ -61,7 +65,7 @@ public class FileInfoServiceImpl implements FileInfoService {
         try {
             Path path = Path.of(pathToInfoFile, nameToInfoFileFile);
             Files.deleteIfExists(path);
-            sockServerService.saveToFile();
+            saveToFile(socksRepository.getMapInString());
             return true;
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,10 +1,7 @@
 package com.example.coursework.Service.Impl;
 
 import com.example.coursework.Exception.ValidationException;
-import com.example.coursework.Model.Color;
-import com.example.coursework.Model.Size;
-import com.example.coursework.Model.Socks;
-import com.example.coursework.Model.SocksBatch;
+import com.example.coursework.Model.*;
 import com.example.coursework.Repository.SocksRepository;
 import com.example.coursework.Service.SockServerService;
 import com.example.coursework.Service.ValidationService;
@@ -12,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -25,6 +23,8 @@ public class SockServerServiceImpl implements SockServerService {
     public void accept(SocksBatch socksBatch) {
         checkSockValidate(socksBatch);
         socksRepository.save(socksBatch);
+        AllInfoSocks allInfoSocks = new AllInfoSocks(socksBatch, LocalDateTime.now(), "Принятие");
+        fileInfoService.saveToFile(allInfoSocks.toString());
         saveToFile();
     }
 
@@ -52,7 +52,7 @@ public class SockServerServiceImpl implements SockServerService {
             if (socks.getColor().equals(color) &&
                 socks.getColor().equals(size) &&
                 socks.getCottonPart() >= cottonMin ||
-                socks.getCottonPart() <= cottonMax){
+                socks.getCottonPart() <= cottonMax) {
                 return socksIntegerEntry.getValue();
             }
         }
