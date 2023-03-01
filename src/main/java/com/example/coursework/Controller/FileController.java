@@ -94,7 +94,7 @@ public class FileController {
         }
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/")
+    @GetMapping("/info")
     public ResponseEntity<InputStreamResource> exportInfoFile() throws FileNotFoundException {
         File file = fileInfoService.getDataFile();
         if (file.exists()) {
@@ -106,5 +106,11 @@ public class FileController {
                     .body(resource);
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/info", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> importInfoFile(@RequestParam MultipartFile file) {
+        fileInfoService.checkingConstructionCreateFile(file);
+        return ResponseEntity.ok().build();
     }
 }

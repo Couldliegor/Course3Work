@@ -2,7 +2,6 @@ package com.example.coursework.Service.Impl;
 
 import com.example.coursework.Repository.SocksRepository;
 import com.example.coursework.Service.FileInfoService;
-import com.example.coursework.Service.SockServerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +17,9 @@ public class FileInfoServiceImpl implements FileInfoService {
     private String pathToInfoFile;
     @Value("${name.of.info.data.file}")
     private String nameToInfoFileFile;
-
-    private final SockServerService sockServerService;
-
     private final SocksRepository socksRepository;
 
-    public FileInfoServiceImpl(SockServerService sockServerService, SocksRepository socksRepository) {
-        this.sockServerService = sockServerService;
+    public FileInfoServiceImpl(SocksRepository socksRepository) {
         this.socksRepository = socksRepository;
     }
 
@@ -70,6 +65,17 @@ public class FileInfoServiceImpl implements FileInfoService {
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+    @Override
+    public boolean cleanDataFile() {
+        Path path = Path.of(pathToInfoFile,nameToInfoFileFile);
+        try {
+            Files.deleteIfExists(path);
+            Files.createFile(path);
+            return true;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

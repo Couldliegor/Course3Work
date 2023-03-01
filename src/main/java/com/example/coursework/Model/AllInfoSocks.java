@@ -12,5 +12,5 @@ import java.time.LocalDateTime;
 public class AllInfoSocks {
     private SocksBatch socksBatch;
     private LocalDateTime localDateTime;
-    private String typeOfOperation;
+    private TypeOfOperation typeOfOperation;
 }

@@ -9,8 +9,6 @@ import java.util.Map;
 public interface SocksRepository {
     String getMapInString() throws JsonProcessingException;
 
-    Map<Socks, Integer> getMap() throws JsonProcessingException;
-
     Map<Socks, Integer> getAll();
 
     void save(SocksBatch socksBatch);

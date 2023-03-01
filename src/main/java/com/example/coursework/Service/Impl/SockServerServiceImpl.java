@@ -6,37 +6,45 @@ import com.example.coursework.Repository.SocksRepository;
 import com.example.coursework.Service.SockServerService;
 import com.example.coursework.Service.ValidationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
+
 @AllArgsConstructor
 @Service
 public class SockServerServiceImpl implements SockServerService {
     private final SocksRepository socksRepository;
     private final FileInfoServiceImpl fileInfoService;
+    private final FileServiceImpl fileService;
     private final ValidationService validationService;
+    private final ObjectMapper objectMapper;
 
     @Override
-    public void accept(SocksBatch socksBatch) {
+    public void accept(SocksBatch socksBatch) throws JsonProcessingException {
         checkSockValidate(socksBatch);
         socksRepository.save(socksBatch);
-        AllInfoSocks allInfoSocks = new AllInfoSocks(socksBatch, LocalDateTime.now(), "Принятие");
-        fileInfoService.saveToFile(allInfoSocks.toString());
-        saveToFile();
+        AllInfoSocks allInfoSocks = new AllInfoSocks(socksBatch, LocalDateTime.now(), TypeOfOperation.accept);
+        fileInfoService.saveToFile(objectMapper.writeValueAsString(allInfoSocks));
+        fileService.saveToFile(socksRepository.getMapInString());
     }
 
     @Override
-    public int issuance(SocksBatch socksBatch) {
+    public int issuance(SocksBatch socksBatch) throws JsonProcessingException {
         checkSockValidate(socksBatch);
+        AllInfoSocks allInfoSocks = new AllInfoSocks(socksBatch, LocalDateTime.now(), TypeOfOperation.issuance);
+        fileInfoService.saveToFile(objectMapper.writeValueAsString(allInfoSocks));
         return socksRepository.remove(socksBatch);
     }
 
     @Override
-    public int reject(SocksBatch socksBatch) {
+    public int reject(SocksBatch socksBatch) throws JsonProcessingException {
         checkSockValidate(socksBatch);
+        AllInfoSocks allInfoSocks = new AllInfoSocks(socksBatch, LocalDateTime.now(), TypeOfOperation.reject);
+        fileInfoService.saveToFile(objectMapper.writeValueAsString(allInfoSocks));
         fileInfoService.updateFile();
         return socksRepository.remove(socksBatch);
     }
@@ -65,16 +73,5 @@ public class SockServerServiceImpl implements SockServerService {
         if (!validationService.validate(socksBatch)) {
             throw new ValidationException();
         }
-    }
-
-    @Override
-    public boolean saveToFile() {
-        try {
-            fileInfoService.saveToFile(socksRepository.getMapInString());
-            return true;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 }
